@@ -1,10 +1,17 @@
-from flask import Flask
+from http.server import SimpleHTTPRequestHandler, HTTPServer
 
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "Welcome to your first Flask website!"
+class MyHandler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/':
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(b"Welcome to my simple Python website!")
+        else:
+            self.send_error(404, "Page Not Found!")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    server_address = ('', 8000)
+    httpd = HTTPServer(server_address, MyHandler)
+    print("Server started on http://127.0.0.1:8000")
+    httpd.serve_forever()
